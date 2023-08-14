@@ -22,12 +22,16 @@ exports.getArticles = (request, response, next) => {
 };
 exports.getCommentsByArticleId = (request, response, next) => {
   const { article_id } = request.params;
-  selectArticleById(article_id)
-    .then(() => {
-      return selectCommentsByArticleId(article_id);
+  selectCommentsByArticleId(article_id)
+    .then((comments) => {
+      if (comments.length) {
+        response.status(200).send({ comments });
+      } else {
+        return selectArticleById(article_id);
+      }
     })
     .then((comments) => {
-      response.status(200).send({ comments });
+      response.status(200).send({ comments: [] });
     })
     .catch((error) => {
       next(error);
