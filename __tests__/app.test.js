@@ -231,4 +231,57 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
   });
+  describe("POST", () => {
+    test("201: creates new comment and responds with newly created comment from table", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ username: "rogersop", body: "A whacky good read" })
+        .expect(201)
+        .then((response) => {
+          const { comment } = response.body;
+          expect(comment).toHaveProperty("votes", 0);
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("body", "A whacky good read");
+          expect(comment).toHaveProperty("article_id", 3);
+          expect(comment).toHaveProperty("author", "rogersop");
+        });
+    });
+    test("400: responds with appropriate error message when invalid id is sumbimtted", () => {
+      return request(app)
+        .post("/api/articles/tree/comments")
+        .send({ username: "rogersop", body: "A whacky good read" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("400: responds with appropriate error message when id does not exist", () => {
+      return request(app)
+        .post("/api/articles/123234325/comments")
+        .send({ username: "rogersop", body: "A whacky good read" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("400: responds with appropriate error message when username does not exist", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ username: "Billy", body: "A whacky good read" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test('400: responds with appropriate error message when input body is missing information', ()=> {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ body: "A whacky good read" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    })
+  });
 });
