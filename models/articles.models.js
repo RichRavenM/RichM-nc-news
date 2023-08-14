@@ -26,3 +26,17 @@ exports.selectArticles = () => {
       return rows;
     });
 };
+
+exports.selectCommentsByArticleId = (article_id) => {
+  let baseSQLString = `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body,comments.article_id FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id `;
+
+  if (article_id) {
+    baseSQLString += `WHERE comments.article_id = $1`;
+  }
+
+  baseSQLString += `ORDER BY comments.created_at DESC`;
+
+  return db.query(baseSQLString, [article_id]).then(({ rows }) => {
+    return rows;
+  });
+};

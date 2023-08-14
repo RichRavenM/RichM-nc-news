@@ -1,5 +1,8 @@
-const { selectArticleById } = require("../models/articles.models");
-const { selectArticles } = require("../models/articles.models");
+const {
+  selectArticleById,
+  selectArticles,
+  selectCommentsByArticleId,
+} = require("../models/articles.models");
 
 exports.getArticleById = (request, response, next) => {
   const { article_id } = request.params;
@@ -12,10 +15,21 @@ exports.getArticleById = (request, response, next) => {
     });
 };
 
-
-
 exports.getArticles = (request, response, next) => {
   selectArticles().then((articles) => {
     response.status(200).send({ articles });
   });
+};
+exports.getCommentsByArticleId = (request, response, next) => {
+  const { article_id } = request.params;
+  selectArticleById(article_id)
+    .then(() => {
+      return selectCommentsByArticleId(article_id);
+    })
+    .then((comments) => {
+      response.status(200).send({ comments });
+    })
+    .catch((error) => {
+      next(error);
+    });
 };
