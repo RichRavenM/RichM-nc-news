@@ -102,6 +102,19 @@ describe("/api", () => {
               },
             },
           },
+          "GET /api/articles/:articles_id/comments": {
+            description:
+              "returns an array contatining comments relevant to the article_id",
+            queries: [],
+            exampleResponse: {
+              comment_id: 11,
+              votes: 0,
+              created_at: "2020-09-19T23:10:00.000Z",
+              author: "icellusedkars",
+              body: "Ambidextrous marsupial",
+              article_id: 3,
+            },
+          },
         });
       });
   });
@@ -167,6 +180,54 @@ describe("/api/articles", () => {
             expect(article).toHaveProperty("article_img_url");
             expect(article).toHaveProperty("comment_count");
           });
+        });
+    });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  describe("GET", () => {
+    test("200: responds with an array of comments matching up to a given article id and in descending date order", () => {
+      return request(app)
+        .get("/api/articles/3/comments")
+        .expect(200)
+        .then((response) => {
+          const { comments } = response.body;
+          expect(comments).toBeSortedBy("created_at", { descending: true });
+          expect(comments.length).toBe(2);
+          comments.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id");
+            expect(comment).toHaveProperty("article_id");
+            expect(comment).toHaveProperty("votes");
+            expect(comment).toHaveProperty("created_at");
+            expect(comment).toHaveProperty("author");
+            expect(comment).toHaveProperty("body");
+          });
+        });
+    });
+    test("400: returns appropriate error message when given invalid id", () => {
+      return request(app)
+        .get("/api/articles/tree/comments")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("404: responds with appropriate error message when id does not exist", () => {
+      return request(app)
+        .get("/api/articles/1231212/comments")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Article id does not exist");
+        });
+    });
+    test("200: responds with empty array when id does exist but no results are returned", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then((response) => {
+          const { comments } = response.body;
+          expect(comments).toEqual([]);
         });
     });
   });
