@@ -48,8 +48,8 @@ describe("generic invalid URL error", () => {
   });
 });
 
-describe("/api/topics", () => {
-  test("200: responds with object containing all the ap endpoints", () => {
+describe("/api", () => {
+  test("GET: 200: responds with object containing all the api endpoints", () => {
     return request(app)
       .get("/api")
       .expect(200)

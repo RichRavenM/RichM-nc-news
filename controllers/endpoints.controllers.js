@@ -1,8 +1,5 @@
-const { selectEndpoints } = require("../models/endpoints.models");
+const endpoints = require(`${__dirname}/../endpoints.json`);
 
 exports.getEndpoints = (request, response, next) => {
-  selectEndpoints().then((endpoints) => {
-    endpoints = JSON.parse(endpoints);
-    response.status(200).send({ endpoints });
-  });
+  response.status(200).send({ endpoints });
 };
