@@ -41,7 +41,7 @@ describe("generic invalid URL error", () => {
   test("returns correct error and message when invalid url path used", () => {
     return request(app)
       .get("/api/sdsdsd")
-      .expect(400)
+      .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Invalid url");
       });
