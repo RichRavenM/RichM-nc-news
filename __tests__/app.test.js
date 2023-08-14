@@ -146,3 +146,28 @@ describe("/api/articles/:article_id", () => {
     });
   });
 });
+
+describe("/api/articles", () => {
+  describe("GET", () => {
+    test("200: responds with array of articles with comment counts in descending date order", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+          expect(articles.length).toBe(13);
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("author");
+            expect(article).toHaveProperty("title");
+            expect(article).toHaveProperty("topic");
+            expect(article).toHaveProperty("article_id");
+            expect(article).toHaveProperty("created_at");
+            expect(article).toHaveProperty("votes");
+            expect(article).toHaveProperty("article_img_url");
+            expect(article).toHaveProperty("comment_count");
+          });
+        });
+    });
+  });
+});
