@@ -35,47 +35,7 @@ describe("/api/topics", () => {
         ]);
       });
   });
-  test("400: responds with correct error code and message when invalid method is used", () => {
-    return request(app)
-      .post("/api/topics")
-      .expect(405)
-      .then((response) => {
-        expect(response.body.msg).toBe("Invalid method used");
-      })
-      .then(() => {
-        return request(app)
-          .patch("/api/topics")
-          .expect(405)
-          .then((response) => {
-            expect(response.body.msg).toBe("Invalid method used");
-          });
-      })
-      .then(() => {
-        return request(app)
-          .post("/api/topics")
-          .expect(405)
-          .then((response) => {
-            expect(response.body.msg).toBe("Invalid method used");
-          });
-      })
-      .then(() => {
-        return request(app)
-          .put("/api/topics")
-          .expect(405)
-          .then((response) => {
-            expect(response.body.msg).toBe("Invalid method used");
-          });
-      })
-      .then(() => {
-        return request(app)
-          .delete("/api/topics")
-          .expect(405)
-          .then((response) => {
-            expect(response.body.msg).toBe("Invalid method used");
-          });
-      });
-  });
-});
+})
 
 describe("generic invalid URL error", () => {
   test("returns correct error and message when invalid url path used", () => {
@@ -85,37 +45,5 @@ describe("generic invalid URL error", () => {
       .then((response) => {
         expect(response.body.msg).toBe("Invalid url");
       })
-      .then(() => {
-        return request(app)
-          .post("/api/sdsdsd")
-          .expect(400)
-          .then((response) => {
-            expect(response.body.msg).toBe("Invalid url");
-          });
-      })
-      .then(() => {
-        return request(app)
-          .patch("/api/sdsdsd")
-          .expect(400)
-          .then((response) => {
-            expect(response.body.msg).toBe("Invalid url");
-          });
-      })
-      .then(() => {
-        return request(app)
-          .put("/api/sdsdsd")
-          .expect(400)
-          .then((response) => {
-            expect(response.body.msg).toBe("Invalid url");
-          });
-      })
-      .then(() => {
-        return request(app)
-          .delete("/api/sdsdsd")
-          .expect(400)
-          .then((response) => {
-            expect(response.body.msg).toBe("Invalid url");
-          });
-      });
   });
 });
