@@ -368,7 +368,7 @@ describe("/api/comments/:comment_id", () => {
 });
 describe("/api/users", () => {
   describe("GET", () => {
-    test.only("200: responds with an array of users with username, name, and avatar_url properties", () => {
+    test("200: responds with an array of users with username, name, and avatar_url properties", () => {
       return request(app)
         .get("/api/users")
         .expect(200)
