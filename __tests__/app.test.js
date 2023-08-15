@@ -443,22 +443,22 @@ describe("/api/articles", () => {
             expect(response.body.msg).toBe("Bad request");
           });
       });
-      test("400: responds with appropriate error message when id does not exist", () => {
+      test("404: responds with appropriate error message when id does not exist", () => {
         return request(app)
           .post("/api/articles/123234325/comments")
           .send({ username: "rogersop", body: "A whacky good read" })
-          .expect(400)
+          .expect(404)
           .then((response) => {
-            expect(response.body.msg).toBe("Bad request");
+            expect(response.body.msg).toBe("Input value not found");
           });
       });
       test("400: responds with appropriate error message when username does not exist", () => {
         return request(app)
           .post("/api/articles/3/comments")
           .send({ username: "Billy", body: "A whacky good read" })
-          .expect(400)
+          .expect(404)
           .then((response) => {
-            expect(response.body.msg).toBe("Bad request");
+            expect(response.body.msg).toBe("Input value not found");
           });
       });
       test("400: responds with appropriate error message when input body is missing information", () => {

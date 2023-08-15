@@ -17,14 +17,8 @@ exports.selectArticleById = (article_id) => {
   });
 };
 
-exports.selectArticles = (order, sort_by, topic) => {
+exports.selectArticles = (order = "desc", sort_by = "created_at", topic) => {
   const queryValues = [];
-  if (!order) {
-    order = "desc";
-  }
-  if (!sort_by) {
-    sort_by = "created_at";
-  }
   const acceptableOrders = ["asc", "desc"];
   const acceptableSortBys = [
     "author",
