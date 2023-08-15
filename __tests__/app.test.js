@@ -158,6 +158,66 @@ describe("/api/articles/:article_id", () => {
         });
     });
   });
+  describe("PATCH", () => {
+    test("200: updates votes for the given article by article id and responds with the updated article", () => {
+      return request(app)
+        .patch("/api/articles/3")
+        .send({ inc_votes: 1 })
+        .expect(200)
+        .then((response) => {
+          const { article } = response.body;
+          expect(article).toEqual({
+            title: "Eight pug gifs that remind me of mitch",
+            topic: "mitch",
+            article_id: 3,
+            votes: 1,
+            author: "icellusedkars",
+            body: "some gifs",
+            created_at: "2020-11-03T09:12:00.000Z",
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          });
+        });
+    });
+    test("400: responds with appropriate error message when article id is invalid", () => {
+      return request(app)
+        .patch("/api/articles/tree")
+        .send({ inc_votes: 1 })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("404: responds with appropriate error message when article id does not exist", () => {
+      return request(app)
+        .patch("/api/articles/1231212")
+        .send({ inc_votes: 1 })
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Article id does not exist");
+        });
+    });
+    test("400: responds with appropriate error message when body contains non integer value", () => {
+      return request(app)
+        .patch("/api/articles/3")
+        .send({ inc_votes: "tree" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("400:responds with an appropriate error when votes are modified to become a negative number", () => {
+      return request(app)
+        .patch("/api/articles/3")
+        .send({ inc_votes: -100 })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe(
+            "Cannot set votes to be a negative number"
+          );
+        });
+    });
+  });
 });
 
 describe("/api/articles", () => {
