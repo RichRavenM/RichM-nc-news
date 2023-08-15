@@ -10,8 +10,13 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
+    "description": "serves an array of all articles. use ",
     "queries": ["author", "topic", "sort_by", "order"],
+    "queryInfo": {
+      "topic": "filters results to only include articles which match topic",
+      "sort_by": "sorts articles by values for valid article parameters. sorts numeric values numerically and non-numerical values alphabetically. defaults to created_at",
+      "order": "sorts articles in ascending or descending order. defaults to descending"
+    },
     "exampleResponse": {
       "articles": [
         {

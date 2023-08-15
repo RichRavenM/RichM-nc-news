@@ -17,14 +17,51 @@ exports.selectArticleById = (article_id) => {
   });
 };
 
-exports.selectArticles = () => {
-  return db
-    .query(
-      `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at,articles.votes, articles.article_img_url, count(comments) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+exports.selectArticles = (order, sort_by, topic) => {
+  const queryValues = [];
+  if (!order) {
+    order = "desc";
+  }
+  if (!sort_by) {
+    sort_by = "created_at";
+  }
+  const acceptableOrders = ["asc", "desc"];
+  const acceptableSortBys = [
+    "author",
+    "title",
+    "topic",
+    "article_id",
+    "comment_count",
+    "article_img_url",
+    "votes",
+    "created_at",
+  ];
+  const acceptableTopics = ["mitch", "cats", "dogs"];
+
+  if (!acceptableOrders.includes(order)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+  if (!acceptableSortBys.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+  if (topic && !acceptableTopics.includes(topic)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
+  let baseSQLString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at,articles.votes, articles.article_img_url, count(comments) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
+
+  if (topic) {
+    baseSQLString += `WHERE articles.topic = $1 `;
+    queryValues.push(topic);
+  }
+
+  baseSQLString += `GROUP BY articles.article_id `;
+
+  baseSQLString += `ORDER BY ${sort_by} ${order};`;
+
+  return db.query(baseSQLString, queryValues).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.selectCommentsByArticleId = (article_id) => {

@@ -18,9 +18,14 @@ exports.getArticleById = (request, response, next) => {
 };
 
 exports.getArticles = (request, response, next) => {
-  selectArticles().then((articles) => {
-    response.status(200).send({ articles });
-  });
+  const { order, sort_by, topic } = request.query;
+  selectArticles(order, sort_by, topic)
+    .then((articles) => {
+      response.status(200).send({ articles });
+    })
+    .catch((error) => {
+      next(error);
+    });
 };
 exports.getCommentsByArticleId = (request, response, next) => {
   const { article_id } = request.params;
