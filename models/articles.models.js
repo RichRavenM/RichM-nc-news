@@ -1,10 +1,13 @@
 const db = require("../db/connection");
 
 exports.selectArticleById = (article_id) => {
-  let baseSQLString = `SELECT * FROM articles `;
+  let baseSQLString = `SELECT articles.author, articles.title, articles.article_id, articles.body, articles.topic, articles.created_at, articles.votes, 
+  articles.article_img_url, count(comments)::int AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
   if (article_id) {
-    baseSQLString += `WHERE article_id = $1`;
+    baseSQLString += `WHERE articles.article_id = $1 `;
   }
+
+  baseSQLString += `GROUP BY articles.article_id;`;
 
   return db.query(baseSQLString, [article_id]).then(({ rows }) => {
     if (!rows.length) {
@@ -42,7 +45,7 @@ exports.selectArticles = (order = "desc", sort_by = "created_at", topic) => {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
-  let baseSQLString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at,articles.votes, articles.article_img_url, count(comments) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
+  let baseSQLString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at,articles.votes, articles.article_img_url, count(comments)::int AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
 
   if (topic) {
     baseSQLString += `WHERE articles.topic = $1 `;
