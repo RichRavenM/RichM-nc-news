@@ -36,9 +36,9 @@ app.use((request, response) => {
 });
 app.use(handleSqlErrors);
 app.use(handleCustomErrors);
-exports.handleServerErrors = (err, req, res, next) => {
+app.use((err, req, res, next) => {
   console.log(err);
   res.status(500).send({ msg: "Internal Server Error" });
-};
+})
 
-module.exports =  app ;
+module.exports =  app;
