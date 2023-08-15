@@ -3,7 +3,7 @@ const ENV = process.env.NODE_ENV || "development";
 const config = {};
 
 if (ENV === "production") {
-  config.connectionString = process.env.DATABASE_URL;
+  config.connectionString = `postgres://wrvztijk:3woai4R6XjxHIqZZSYBnXytUhNVhMPlr@trumpet.db.elephantsql.com/wrvztijk`
   config.max = 2;
 }
 
