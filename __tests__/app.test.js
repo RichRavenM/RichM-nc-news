@@ -224,5 +224,24 @@ describe("/api/articles/:article_id/comments", () => {
           expect(response.body.msg).toBe("Bad request");
         });
     });
+    test("200: responds with newly created comment when additional unnecessary info is added to the request body", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({
+          username: "rogersop",
+          body: "A whacky good read",
+          hobby: "running",
+        })
+        .expect(201)
+        .then((response) => {
+          const { comment } = response.body;
+          expect(comment).toHaveProperty("votes", 0);
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("body", "A whacky good read");
+          expect(comment).toHaveProperty("article_id", 3);
+          expect(comment).toHaveProperty("author", "rogersop");
+        });
+    });
   });
 });

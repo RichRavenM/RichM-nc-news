@@ -23,16 +23,14 @@ exports.getArticles = (request, response, next) => {
 };
 exports.getCommentsByArticleId = (request, response, next) => {
   const { article_id } = request.params;
-  selectCommentsByArticleId(article_id)
-    .then((comments) => {
-      if (comments.length) {
-        response.status(200).send({ comments });
-      } else {
-        return selectArticleById(article_id);
-      }
-    })
-    .then((comments) => {
-      response.status(200).send({ comments: [] });
+  const promises = [
+    selectCommentsByArticleId(article_id),
+    selectArticleById(article_id),
+  ];
+  Promise.all(promises)
+    .then((resolvedArray) => {
+      comments = resolvedArray[0];
+      response.status(200).send({ comments });
     })
     .catch((error) => {
       next(error);
