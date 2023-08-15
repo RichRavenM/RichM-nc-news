@@ -1,9 +1,5 @@
-exports.handleErrorBadUrl = (request, response) => {
-  response.status(404).send({ msg: "Invalid url" });
-};
-
 exports.handleSqlErrors = (error, request, response, next) => {
-  if (error.code === "22P02") {
+  if (error.code === "22P02" || error.code === "23503" || error.code === '23502') {
     response.status(400).send({ msg: "Bad request" });
   } else {
     next(error);

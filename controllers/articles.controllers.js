@@ -3,6 +3,7 @@ const {
   selectArticles,
   selectCommentsByArticleId,
   updateArticleVotesById,
+  insertCommentByArticleId,
 } = require("../models/articles.models");
 
 exports.getArticleById = (request, response, next) => {
@@ -23,16 +24,26 @@ exports.getArticles = (request, response, next) => {
 };
 exports.getCommentsByArticleId = (request, response, next) => {
   const { article_id } = request.params;
-  selectCommentsByArticleId(article_id)
-    .then((comments) => {
-      if (comments.length) {
-        response.status(200).send({ comments });
-      } else {
-        return selectArticleById(article_id);
-      }
+  const promises = [
+    selectCommentsByArticleId(article_id),
+    selectArticleById(article_id),
+  ];
+  Promise.all(promises)
+    .then((resolvedArray) => {
+      comments = resolvedArray[0];
+      response.status(200).send({ comments });
     })
-    .then((comments) => {
-      response.status(200).send({ comments: [] });
+    .catch((error) => {
+      next(error);
+    });
+};
+
+exports.postCommentbyArticleId = (request, response, next) => {
+  const { article_id } = request.params;
+  const { body } = request;
+  insertCommentByArticleId(body, article_id)
+    .then((comment) => {
+      response.status(201).send({ comment });
     })
     .catch((error) => {
       next(error);

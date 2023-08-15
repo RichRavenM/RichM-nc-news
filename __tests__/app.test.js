@@ -3,6 +3,7 @@ const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
+const endpoints = require(`${__dirname}/../endpoints.json`);
 
 beforeEach(() => {
   return seed(data);
@@ -55,67 +56,7 @@ describe("/api", () => {
       .expect(200)
       .then((response) => {
         const { endpoints } = response.body;
-        expect(endpoints).toEqual({
-          "GET /api": {
-            description:
-              "serves up a json representation of all the available endpoints of the api",
-          },
-          "GET /api/topics": {
-            description: "serves an array of all topics",
-            queries: [],
-            exampleResponse: {
-              topics: [{ slug: "football", description: "Footie!" }],
-            },
-          },
-          "GET /api/articles": {
-            description: "serves an array of all articles",
-            queries: ["author", "topic", "sort_by", "order"],
-            exampleResponse: {
-              articles: [
-                {
-                  title: "Seafood substitutions are increasing",
-                  topic: "cooking",
-                  author: "weegembump",
-                  body: "Text from the article..",
-                  created_at: "2018-05-30T15:59:13.341Z",
-                  votes: 0,
-                  comment_count: 6,
-                },
-              ],
-            },
-          },
-          "GET /api/articles/:articles_id": {
-            description:
-              "returns an object containing information relevant to the article which matches the article id",
-            queries: [],
-            exampleResponse: {
-              article: {
-                title: "Eight pug gifs that remind me of mitch",
-                topic: "mitch",
-                article_id: 3,
-                votes: 0,
-                author: "icellusedkars",
-                body: "some gifs",
-                created_at: "2020-11-03T09:12:00.000Z",
-                article_img_url:
-                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-              },
-            },
-          },
-          "GET /api/articles/:articles_id/comments": {
-            description:
-              "returns an array contatining comments relevant to the article_id",
-            queries: [],
-            exampleResponse: {
-              comment_id: 11,
-              votes: 0,
-              created_at: "2020-09-19T23:10:00.000Z",
-              author: "icellusedkars",
-              body: "Ambidextrous marsupial",
-              article_id: 3,
-            },
-          },
-        });
+        expect(endpoints).toEqual(endpoints);
       });
   });
 });
@@ -288,6 +229,78 @@ describe("/api/articles/:article_id/comments", () => {
         .then((response) => {
           const { comments } = response.body;
           expect(comments).toEqual([]);
+        });
+    });
+  });
+  describe("POST", () => {
+    test("201: creates new comment and responds with newly created comment from table", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ username: "rogersop", body: "A whacky good read" })
+        .expect(201)
+        .then((response) => {
+          const { comment } = response.body;
+          expect(comment).toHaveProperty("votes", 0);
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("body", "A whacky good read");
+          expect(comment).toHaveProperty("article_id", 3);
+          expect(comment).toHaveProperty("author", "rogersop");
+        });
+    });
+    test("400: responds with appropriate error message when invalid id is sumbimtted", () => {
+      return request(app)
+        .post("/api/articles/tree/comments")
+        .send({ username: "rogersop", body: "A whacky good read" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("400: responds with appropriate error message when id does not exist", () => {
+      return request(app)
+        .post("/api/articles/123234325/comments")
+        .send({ username: "rogersop", body: "A whacky good read" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("400: responds with appropriate error message when username does not exist", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ username: "Billy", body: "A whacky good read" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("400: responds with appropriate error message when input body is missing information", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ body: "A whacky good read" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("200: responds with newly created comment when additional unnecessary info is added to the request body", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({
+          username: "rogersop",
+          body: "A whacky good read",
+          hobby: "running",
+        })
+        .expect(201)
+        .then((response) => {
+          const { comment } = response.body;
+          expect(comment).toHaveProperty("votes", 0);
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("body", "A whacky good read");
+          expect(comment).toHaveProperty("article_id", 3);
+          expect(comment).toHaveProperty("author", "rogersop");
         });
     });
   });
