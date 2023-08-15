@@ -314,3 +314,55 @@ describe("/api/articles/:article_id/comments", () => {
     });
   });
 });
+describe("/api/comments/:comment_id", () => {
+  describe("GET", () => {
+    test("200: responds with 200 when comment exists", () => {
+      return request(app).get("/api/comments/3").expect(200);
+    });
+    test("400: responds with appropriate error message when comment id is invalid", () => {
+      return request(app)
+        .get("/api/comments/tree")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("404: responds with appropriate error message when comment id does not exist", () => {
+      return request(app)
+        .get("/api/comments/1231212")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Comment id does not exist");
+        });
+    });
+  });
+  describe("DELETE", () => {
+    test("204: deletes comment by given comment id", () => {
+      return request(app)
+        .delete("/api/comments/3")
+        .expect(204)
+        .then(() => {
+          return request(app).get("/api/comments/3").expect(404);
+        })
+        .then((response) => {
+          expect(response.body.msg).toBe("Comment id does not exist");
+        });
+    });
+    test("400: responds with appropriate error message when comment id is invalid", () => {
+      return request(app)
+        .delete("/api/comments/tree")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("404: responds with appropriate error message when comment id does not exist", () => {
+      return request(app)
+        .delete("/api/comments/1231212")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Comment id does not exist");
+        });
+    });
+  });
+});

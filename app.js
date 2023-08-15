@@ -8,6 +8,10 @@ const {
   postCommentbyArticleId,
 } = require("./controllers/articles.controllers");
 const {
+  getCommentById,
+  deleteCommentById,
+} = require("./controllers/comments.controllers");
+const {
   handleSqlErrors,
   handleCustomErrors,
 } = require("./controllers/errors.controllers");
@@ -22,12 +26,14 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.patch("/api/articles/:article_id", patchArticleById);
 app.post("/api/articles/:article_id/comments", postCommentbyArticleId);
+app.get("/api/comments/:comment_id", getCommentById);
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
-app.use(handleSqlErrors);
-app.use(handleCustomErrors);
 app.use((request, response) => {
   response.status(404).send({ msg: "Invalid url" });
 });
+app.use(handleSqlErrors);
+app.use(handleCustomErrors);
 exports.handleServerErrors = (err, req, res, next) => {
   console.log(err);
   res.status(500).send({ msg: "Internal Server Error" });
