@@ -366,3 +366,20 @@ describe("/api/comments/:comment_id", () => {
     });
   });
 });
+describe("/api/users", () => {
+  describe("GET", () => {
+    test.only("200: responds with an array of users with username, name, and avatar_url properties", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((response) => {
+          const { users } = response.body;
+          users.forEach((user) => {
+            expect(user).toHaveProperty("username");
+            expect(user).toHaveProperty("name");
+            expect(user).toHaveProperty("avatar_url");
+          });
+        });
+    });
+  });
+});
