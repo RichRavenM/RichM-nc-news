@@ -374,6 +374,7 @@ describe("/api/users", () => {
         .expect(200)
         .then((response) => {
           const { users } = response.body;
+          expect(users.length).toBe(4);
           users.forEach((user) => {
             expect(user).toHaveProperty("username");
             expect(user).toHaveProperty("name");
