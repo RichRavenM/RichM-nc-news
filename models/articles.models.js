@@ -54,12 +54,6 @@ exports.updateArticleVotesById = (body, article_id) => {
           msg: "Article id does not exist",
         });
       }
-      if (rows[0].votes < 0) {
-        return Promise.reject({
-          status: 400,
-          msg: "Cannot set votes to be a negative number",
-        });
-      }
       return rows[0];
     });
 };
@@ -72,5 +66,4 @@ exports.insertCommentByArticleId = (body, article_id) => {
     .then(({ rows }) => {
       return rows[0];
     });
-  }
-
+};

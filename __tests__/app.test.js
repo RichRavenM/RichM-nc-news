@@ -147,17 +147,6 @@ describe("/api/articles/:article_id", () => {
           expect(response.body.msg).toBe("Bad request");
         });
     });
-    test("400:responds with an appropriate error when votes are modified to become a negative number", () => {
-      return request(app)
-        .patch("/api/articles/3")
-        .send({ inc_votes: -100 })
-        .expect(400)
-        .then((response) => {
-          expect(response.body.msg).toBe(
-            "Cannot set votes to be a negative number"
-          );
-        });
-    });
     test("200: responds with given article and updates votes if request body has unnecessary info", () => {
       return request(app)
         .patch("/api/articles/3")
