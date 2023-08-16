@@ -6,6 +6,8 @@ const {
   insertCommentByArticleId,
 } = require("../models/articles.models");
 
+const { checkTopicExists } = require("../models/topics.models");
+
 exports.getArticleById = (request, response, next) => {
   const { article_id } = request.params;
   selectArticleById(article_id)
@@ -19,8 +21,13 @@ exports.getArticleById = (request, response, next) => {
 
 exports.getArticles = (request, response, next) => {
   const { order, sort_by, topic } = request.query;
-  selectArticles(order, sort_by, topic)
-    .then((articles) => {
+  const promises = [selectArticles(order, sort_by, topic)];
+  if (topic) {
+    promises.push(checkTopicExists(topic));
+  }
+  Promise.all(promises)
+    .then((resolvedPromises) => {
+      const articles = resolvedPromises[0];
       response.status(200).send({ articles });
     })
     .catch((error) => {

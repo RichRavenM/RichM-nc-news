@@ -1,4 +1,4 @@
-const  app  = require("../app");
+const app = require("../app");
 const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
@@ -356,7 +356,7 @@ describe("/api/articles", () => {
           });
         })
         .then(() => {
-          return request(app).get("/api/articles?topic=dogs").expect(200);
+          return request(app).get("/api/articles?topic=paper").expect(200);
         })
         .then((response) => {
           const { articles } = response.body;
@@ -366,9 +366,9 @@ describe("/api/articles", () => {
     test("400: responds with an appropriate error message when topic query is invalid", () => {
       return request(app)
         .get("/api/articles?topic=banana")
-        .expect(400)
+        .expect(404)
         .then((response) => {
-          expect(response.body.msg).toBe("Bad request");
+          expect(response.body.msg).toBe("Topic does not exist");
         });
     });
   });
@@ -560,6 +560,21 @@ describe("/api/articles", () => {
             });
           });
       });
+    });
+  });
+});
+describe("checkTopicExists", () => {
+  describe("GET", () => {
+    test("200: responds with 200 when topic exists", () => {
+      return request(app).get("/api/articles?topic=mitch").expect(200);
+    });
+    test("404: responds with appropriate error message when topic does not exist", () => {
+      return request(app)
+        .get("/api/articles?topic=egg")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Topic does not exist");
+        });
     });
   });
 });

@@ -33,15 +33,11 @@ exports.selectArticles = (order = "desc", sort_by = "created_at", topic) => {
     "votes",
     "created_at",
   ];
-  const acceptableTopics = ["mitch", "cats", "dogs"];
 
   if (!acceptableOrders.includes(order)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
   if (!acceptableSortBys.includes(sort_by)) {
-    return Promise.reject({ status: 400, msg: "Bad request" });
-  }
-  if (topic && !acceptableTopics.includes(topic)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
