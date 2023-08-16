@@ -3,6 +3,8 @@ exports.handleSqlErrors = (error, request, response, next) => {
     response.status(400).send({ msg: "Bad request" });
   } else if (error.code === "23503") {
     response.status(404).send({ msg: "Input value not found" });
+  } else if (error.code === "23505") {
+    response.status(400).send({ msg: "Slug already exists" });
   } else {
     next(error);
   }

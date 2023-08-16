@@ -9,6 +9,12 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "adds a new topic to the topics table and returns the newly created topic. must contain a slug that does not already exist",
+    "queries": [],
+    "body": { "slug": "Baseball", "description": "Home run!" },
+    "exampleResponse": { "slug": "Baseball", "description": "Home run!" }
+  },
   "GET /api/articles": {
     "description": "serves an array of all articles. use ",
     "queries": ["author", "topic", "sort_by", "order"],

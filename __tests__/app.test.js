@@ -14,27 +14,82 @@ afterAll(() => {
 });
 
 describe("/api/topics", () => {
-  test("GET 200: Responds with an array of topic objects with slugs and descriptions", () => {
-    return request(app)
-      .get("/api/topics")
-      .expect(200)
-      .then((response) => {
-        const { topics } = response.body;
-        expect(topics).toEqual([
-          {
-            description: "The man, the Mitch, the legend",
-            slug: "mitch",
-          },
-          {
-            description: "Not dogs",
-            slug: "cats",
-          },
-          {
-            description: "what books are made of",
-            slug: "paper",
-          },
-        ]);
-      });
+  describe("GET", () => {
+    test("GET 200: Responds with an array of topic objects with slugs and descriptions", () => {
+      return request(app)
+        .get("/api/topics")
+        .expect(200)
+        .then((response) => {
+          const { topics } = response.body;
+          expect(topics).toEqual([
+            {
+              description: "The man, the Mitch, the legend",
+              slug: "mitch",
+            },
+            {
+              description: "Not dogs",
+              slug: "cats",
+            },
+            {
+              description: "what books are made of",
+              slug: "paper",
+            },
+          ]);
+        });
+    });
+  });
+  describe("POST", () => {
+    test("201: posts a new topic and responds with the newly posted topic", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({
+          slug: "Jeffs",
+          description: "The Jeff school of thought",
+        })
+        .expect(201)
+        .then((response) => {
+          const { topic } = response.body;
+          expect(topic).toEqual({
+            slug: "Jeffs",
+            description: "The Jeff school of thought",
+          });
+        });
+    });
+    test("400: responds with appropriate error message when input body is missing information", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({ description: "This has no slug" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("201: responds with newly created topic even if extra unnecessary information is added", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({
+          slug: "Jeffs",
+          description: "The Jeff school of thought",
+          theme: "Happiness",
+        })
+        .expect(201)
+        .then((response) => {
+          const { topic } = response.body;
+          expect(topic).toEqual({
+            slug: "Jeffs",
+            description: "The Jeff school of thought",
+          });
+        });
+    });
+    test("400: responds with appropriate error message when slug already exists in topics", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({ slug: "mitch", description: "This slug already exists" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Slug already exists");
+        });
+    });
   });
 });
 
@@ -403,6 +458,15 @@ describe("/api/articles", () => {
           expect(article).toHaveProperty("created_at");
           expect(article).toHaveProperty("votes");
           expect(article).toHaveProperty("article_id");
+        });
+    });
+    test("400: responds with appropriate error message when input body is missing information", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({ author: "icellusedkars" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
         });
     });
     test("404: responds with appropriate error message when username that does not exist is used", () => {
