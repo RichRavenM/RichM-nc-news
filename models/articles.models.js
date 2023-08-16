@@ -69,20 +69,6 @@ exports.selectArticleById = (article_id) => {
   });
 };
 
-exports.selectCommentsByArticleId = (article_id) => {
-  let baseSQLString = `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body,comments.article_id FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id `;
-
-  if (article_id) {
-    baseSQLString += `WHERE comments.article_id = $1`;
-  }
-
-  baseSQLString += `ORDER BY comments.created_at DESC`;
-
-  return db.query(baseSQLString, [article_id]).then(({ rows }) => {
-    return rows;
-  });
-};
-
 exports.updateArticleVotesById = (body, article_id) => {
   let baseSQLString = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`;
   return db
@@ -97,6 +83,33 @@ exports.updateArticleVotesById = (body, article_id) => {
       return rows[0];
     });
 };
+
+exports.removeArticleById = (article_id) => {
+  let baseSQLString = `DELETE FROM articles WHERE article_id = $1 RETURNING *`;
+  return db.query(baseSQLString, [article_id]).then(({ rows }) => {
+    if (!rows.length) {
+      return Promise.reject({
+        status: 404,
+        msg: "Article id does not exist",
+      });
+    }
+  });
+};
+
+exports.selectCommentsByArticleId = (article_id) => {
+  let baseSQLString = `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body,comments.article_id FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id `;
+
+  if (article_id) {
+    baseSQLString += `WHERE comments.article_id = $1`;
+  }
+
+  baseSQLString += `ORDER BY comments.created_at DESC`;
+
+  return db.query(baseSQLString, [article_id]).then(({ rows }) => {
+    return rows;
+  });
+};
+
 exports.insertCommentByArticleId = (body, article_id) => {
   return db
     .query(

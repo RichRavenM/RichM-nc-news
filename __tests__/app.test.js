@@ -224,6 +224,35 @@ describe("/api/articles/:article_id", () => {
         });
     });
   });
+  describe("DELETE", () => {
+    test("204: deletes article and comments based on given article_id", () => {
+      return request(app)
+        .delete("/api/articles/3")
+        .expect(204)
+        .then(() => {
+          return request(app).get("/api/articles/3").expect(404);
+        })
+        .then(() => {
+          return request(app).get("/api/articles/3/comments").expect(404);
+        });
+    });
+    test("400: Responds with appropriate error when invalid id is used", () => {
+      return request(app)
+        .delete("/api/articles/tree")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("404: Responds with appropriate error when non-existent id is used", () => {
+      return request(app)
+        .delete("/api/articles/1231212")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Article id does not exist");
+        });
+    });
+  });
 });
 
 describe("/api/articles", () => {

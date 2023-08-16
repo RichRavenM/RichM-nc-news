@@ -1,6 +1,9 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "serves up a json representation of all the available endpoints of the api",
+    "queries": [],
+    "exampleResponse": "All the stuff you see on this page!",
+    "status": 200
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
@@ -11,9 +14,9 @@
   },
   "POST /api/topics": {
     "description": "adds a new topic to the topics table and returns the newly created topic. must contain a slug that does not already exist",
-    "queries": [],
     "body": { "slug": "Baseball", "description": "Home run!" },
-    "exampleResponse": { "slug": "Baseball", "description": "Home run!" }
+    "exampleResponse": { "slug": "Baseball", "description": "Home run!" },
+    "status": 200
   },
   "GET /api/articles": {
     "description": "serves an array of all articles. use ",
@@ -35,11 +38,11 @@
           "comment_count": 6
         }
       ]
-    }
+    },
+    "status": 200
   },
   "POST /api/articles": {
     "description": "adds a new article to the article table in the database. username must match a username from within the users table, and topic must match a topic name in the topics table. article_img_url will have default value if no input is provided for it",
-    "queries": [],
     "body": {
       "author": "icellusedkars",
       "title": "A History of Jeffs",
@@ -57,7 +60,8 @@
       "votes": 0,
       "article_img_url": "https://th-thumbnailer.cdn-si-edu.com/bZAar59Bdm95b057iESytYmmAjI=/1400x1050/filters:focal(594x274:595x275)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/95/db/95db799b-fddf-4fde-91f3-77024442b92d/egypt_kitty_social.jpg",
       "comment_count": 0
-    }
+    },
+    "status": 204
   },
   "GET /api/articles/:articles_id": {
     "description": "returns an object containing information relevant to the article which matches the article id",
@@ -74,11 +78,11 @@
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         "comment_count": 2
       }
-    }
+    },
+    "status": 200
   },
   "PATCH /api/articles/:articles_id": {
     "description": "updates a given article's vote count and responds with that updated article",
-    "queries": [],
     "body": { "inc_votes": 1 },
     "exampleResponse": {
       "article": {
@@ -91,7 +95,12 @@
         "created_at": "2020-11-03T09:12:00.000Z",
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
-    }
+    },
+    "status": 200
+  },
+  "DELETE /api/articles/:articles_id": {
+    "description": "removes an article based on the given id. also removes all the comments that had the same article_id",
+    "status": 204
   },
   "GET /api/articles/:articles_id/comments": {
     "description": "returns an array contatining comments relevant to the article_id",
@@ -103,11 +112,11 @@
       "author": "icellusedkars",
       "body": "Ambidextrous marsupial",
       "article_id": 3
-    }
+    },
+    "status": 200
   },
   "POST /api/articles/:articles_id/comments": {
     "description": "adds a new comment to the comment table in the database. username must match a username from within the users table",
-    "queries": [],
     "body": { "username": "rogersop", "body": "A whacky good read" },
     "exampleResponse": {
       "comment_id": 19,
@@ -116,18 +125,15 @@
       "author": "rogersop",
       "votes": 0,
       "created_at": "2023-08-14T15:53:16.851Z"
-    }
+    },
+    "status": 204
   },
   "DELETE /api/comments/:comment_id": {
     "description": "deletes a comment using the given comment id",
-    "queries": [],
-    "exampleResponse": {
-      "status": 204
-    }
+    "status": 204
   },
   "PATCH /api/comments/:comment_id": {
     "description": "updates the vote count for a comment using the given comment id and responds with the updated comment",
-    "queries": [],
     "body": { "inc_votes": 1 },
     "exampleResponse": {
       "article": {
@@ -138,7 +144,8 @@
         "article_id": 1,
         "created_at": "2020-03-01T01:13:00.000Z"
       }
-    }
+    },
+    "status": 200
   },
   "GET /api/users": {
     "description": "returns an array contatining objects of users",
@@ -156,6 +163,7 @@
       "username": "samsamsamsam",
       "name": "sam",
       "avatar_url": "https://th-thumbnailer.cdn-si-edu.com/bZAar59Bdm95b057iESytYmmAjI=/1400x1050/filters:focal(594x274:595x275)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/95/db/95db799b-fddf-4fde-91f3-77024442b92d/egypt_kitty_social.jpg"
-    }
+    },
+    "status": 200
   }
 }
