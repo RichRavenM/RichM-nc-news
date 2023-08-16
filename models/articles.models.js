@@ -72,11 +72,9 @@ exports.selectCommentsByArticleId = (article_id) => {
 };
 
 exports.updateArticleVotesById = (body, article_id) => {
+  let baseSQLString = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`;
   return db
-    .query(
-      `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
-      [body.inc_votes, article_id]
-    )
+    .query(baseSQLString, [body.inc_votes, article_id])
     .then(({ rows }) => {
       if (!rows.length) {
         return Promise.reject({

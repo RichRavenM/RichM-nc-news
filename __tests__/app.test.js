@@ -543,6 +543,69 @@ describe("/api/comments/:comment_id", () => {
         });
     });
   });
+  describe("PATCH", () => {
+    test("200: updates a vote count and responds with the updated comment", () => {
+      return request(app)
+        .patch("/api/comments/3")
+        .send({ inc_votes: 1 })
+        .expect(200)
+        .then((response) => {
+          const { comment } = response.body;
+          expect(comment).toEqual({
+            comment_id: 3,
+            body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+            votes: 101,
+            author: "icellusedkars",
+            article_id: 1,
+            created_at: "2020-03-01T01:13:00.000Z",
+          });
+        });
+    });
+    test("400: responds with appropriate error message when article id is invalid", () => {
+      return request(app)
+        .patch("/api/comments/tree")
+        .send({ inc_votes: 1 })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("404: responds with appropriate error message when article id does not exist", () => {
+      return request(app)
+        .patch("/api/comments/1231212")
+        .send({ inc_votes: 1 })
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Article id does not exist");
+        });
+    });
+    test("400: responds with appropriate error message when body contains non integer value", () => {
+      return request(app)
+        .patch("/api/comments/3")
+        .send({ inc_votes: "tree" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("200: responds with given article and updates votes if request body has unnecessary info", () => {
+      return request(app)
+        .patch("/api/comments/3")
+        .send({ inc_votes: 1, mood: "great" })
+        .expect(200)
+        .then((response) => {
+          const { comment } = response.body;
+          expect(comment).toEqual({
+            comment_id: 3,
+            body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+            votes: 101,
+            author: "icellusedkars",
+            article_id: 1,
+            created_at: "2020-03-01T01:13:00.000Z",
+          });
+        });
+    });
+  });
 });
 describe("/api/users", () => {
   describe("GET", () => {
@@ -599,7 +662,7 @@ describe("/api/users/:username", () => {
         .get("/api/users/memememe")
         .expect(404)
         .then((response) => {
-          expect(response.body.msg).toBe('User does not exist')
+          expect(response.body.msg).toBe("User does not exist");
         });
     });
   });

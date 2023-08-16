@@ -27,3 +27,18 @@ exports.removeCommentById = (comment_id) => {
       }
     });
 };
+
+exports.updateCommentVotesById = (body, comment_id) => {
+  let baseSQLString = `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`;
+  return db
+    .query(baseSQLString, [body.inc_votes, comment_id])
+    .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({
+          status: 404,
+          msg: "Article id does not exist",
+        });
+      }
+      return rows[0];
+    });
+};
