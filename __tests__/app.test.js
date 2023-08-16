@@ -372,194 +372,193 @@ describe("/api/articles", () => {
         });
     });
   });
-
-  describe("/api/articles/:article_id/comments", () => {
-    describe("GET", () => {
-      test("200: responds with an array of comments matching up to a given article id and in descending date order", () => {
-        return request(app)
-          .get("/api/articles/3/comments")
-          .expect(200)
-          .then((response) => {
-            const { comments } = response.body;
-            expect(comments).toBeSortedBy("created_at", { descending: true });
-            expect(comments.length).toBe(2);
-            comments.forEach((comment) => {
-              expect(comment).toHaveProperty("comment_id");
-              expect(comment).toHaveProperty("article_id");
-              expect(comment).toHaveProperty("votes");
-              expect(comment).toHaveProperty("created_at");
-              expect(comment).toHaveProperty("author");
-              expect(comment).toHaveProperty("body");
-            });
+});
+describe("/api/articles/:article_id/comments", () => {
+  describe("GET", () => {
+    test("200: responds with an array of comments matching up to a given article id and in descending date order", () => {
+      return request(app)
+        .get("/api/articles/3/comments")
+        .expect(200)
+        .then((response) => {
+          const { comments } = response.body;
+          expect(comments).toBeSortedBy("created_at", { descending: true });
+          expect(comments.length).toBe(2);
+          comments.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id");
+            expect(comment).toHaveProperty("article_id");
+            expect(comment).toHaveProperty("votes");
+            expect(comment).toHaveProperty("created_at");
+            expect(comment).toHaveProperty("author");
+            expect(comment).toHaveProperty("body");
           });
-      });
-      test("400: returns appropriate error message when given invalid id", () => {
-        return request(app)
-          .get("/api/articles/tree/comments")
-          .expect(400)
-          .then((response) => {
-            expect(response.body.msg).toBe("Bad request");
-          });
-      });
-      test("404: responds with appropriate error message when id does not exist", () => {
-        return request(app)
-          .get("/api/articles/1231212/comments")
-          .expect(404)
-          .then((response) => {
-            expect(response.body.msg).toBe("Article id does not exist");
-          });
-      });
-      test("200: responds with empty array when id does exist but no results are returned", () => {
-        return request(app)
-          .get("/api/articles/2/comments")
-          .expect(200)
-          .then((response) => {
-            const { comments } = response.body;
-            expect(comments).toEqual([]);
-          });
-      });
+        });
     });
-    describe("POST", () => {
-      test("201: creates new comment and responds with newly created comment from table", () => {
-        return request(app)
-          .post("/api/articles/3/comments")
-          .send({ username: "rogersop", body: "A whacky good read" })
-          .expect(201)
-          .then((response) => {
-            const { comment } = response.body;
-            expect(comment).toHaveProperty("votes", 0);
-            expect(comment).toHaveProperty("comment_id");
-            expect(comment).toHaveProperty("created_at");
-            expect(comment).toHaveProperty("body", "A whacky good read");
-            expect(comment).toHaveProperty("article_id", 3);
-            expect(comment).toHaveProperty("author", "rogersop");
-          });
-      });
-      test("400: responds with appropriate error message when invalid id is sumbimtted", () => {
-        return request(app)
-          .post("/api/articles/tree/comments")
-          .send({ username: "rogersop", body: "A whacky good read" })
-          .expect(400)
-          .then((response) => {
-            expect(response.body.msg).toBe("Bad request");
-          });
-      });
-      test("404: responds with appropriate error message when id does not exist", () => {
-        return request(app)
-          .post("/api/articles/123234325/comments")
-          .send({ username: "rogersop", body: "A whacky good read" })
-          .expect(404)
-          .then((response) => {
-            expect(response.body.msg).toBe("Input value not found");
-          });
-      });
-      test("400: responds with appropriate error message when username does not exist", () => {
-        return request(app)
-          .post("/api/articles/3/comments")
-          .send({ username: "Billy", body: "A whacky good read" })
-          .expect(404)
-          .then((response) => {
-            expect(response.body.msg).toBe("Input value not found");
-          });
-      });
-      test("400: responds with appropriate error message when input body is missing information", () => {
-        return request(app)
-          .post("/api/articles/3/comments")
-          .send({ body: "A whacky good read" })
-          .expect(400)
-          .then((response) => {
-            expect(response.body.msg).toBe("Bad request");
-          });
-      });
-      test("200: responds with newly created comment when additional unnecessary info is added to the request body", () => {
-        return request(app)
-          .post("/api/articles/3/comments")
-          .send({
-            username: "rogersop",
-            body: "A whacky good read",
-            hobby: "running",
-          })
-          .expect(201)
-          .then((response) => {
-            const { comment } = response.body;
-            expect(comment).toHaveProperty("votes", 0);
-            expect(comment).toHaveProperty("comment_id");
-            expect(comment).toHaveProperty("created_at");
-            expect(comment).toHaveProperty("body", "A whacky good read");
-            expect(comment).toHaveProperty("article_id", 3);
-            expect(comment).toHaveProperty("author", "rogersop");
-          });
-      });
+    test("400: returns appropriate error message when given invalid id", () => {
+      return request(app)
+        .get("/api/articles/tree/comments")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("404: responds with appropriate error message when id does not exist", () => {
+      return request(app)
+        .get("/api/articles/1231212/comments")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Article id does not exist");
+        });
+    });
+    test("200: responds with empty array when id does exist but no results are returned", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then((response) => {
+          const { comments } = response.body;
+          expect(comments).toEqual([]);
+        });
     });
   });
-  describe("/api/comments/:comment_id", () => {
-    describe("GET", () => {
-      test("200: responds with 200 when comment exists", () => {
-        return request(app).get("/api/comments/3").expect(200);
-      });
-      test("400: responds with appropriate error message when comment id is invalid", () => {
-        return request(app)
-          .get("/api/comments/tree")
-          .expect(400)
-          .then((response) => {
-            expect(response.body.msg).toBe("Bad request");
-          });
-      });
-      test("404: responds with appropriate error message when comment id does not exist", () => {
-        return request(app)
-          .get("/api/comments/1231212")
-          .expect(404)
-          .then((response) => {
-            expect(response.body.msg).toBe("Comment id does not exist");
-          });
-      });
+  describe("POST", () => {
+    test("201: creates new comment and responds with newly created comment from table", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ username: "rogersop", body: "A whacky good read" })
+        .expect(201)
+        .then((response) => {
+          const { comment } = response.body;
+          expect(comment).toHaveProperty("votes", 0);
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("body", "A whacky good read");
+          expect(comment).toHaveProperty("article_id", 3);
+          expect(comment).toHaveProperty("author", "rogersop");
+        });
     });
-    describe("DELETE", () => {
-      test("204: deletes comment by given comment id", () => {
-        return request(app)
-          .delete("/api/comments/3")
-          .expect(204)
-          .then(() => {
-            return request(app).get("/api/comments/3").expect(404);
-          })
-          .then((response) => {
-            expect(response.body.msg).toBe("Comment id does not exist");
-          });
-      });
-      test("400: responds with appropriate error message when comment id is invalid", () => {
-        return request(app)
-          .delete("/api/comments/tree")
-          .expect(400)
-          .then((response) => {
-            expect(response.body.msg).toBe("Bad request");
-          });
-      });
-      test("404: responds with appropriate error message when comment id does not exist", () => {
-        return request(app)
-          .delete("/api/comments/1231212")
-          .expect(404)
-          .then((response) => {
-            expect(response.body.msg).toBe("Comment id does not exist");
-          });
-      });
+    test("400: responds with appropriate error message when invalid id is sumbimtted", () => {
+      return request(app)
+        .post("/api/articles/tree/comments")
+        .send({ username: "rogersop", body: "A whacky good read" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("404: responds with appropriate error message when id does not exist", () => {
+      return request(app)
+        .post("/api/articles/123234325/comments")
+        .send({ username: "rogersop", body: "A whacky good read" })
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Input value not found");
+        });
+    });
+    test("400: responds with appropriate error message when username does not exist", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ username: "Billy", body: "A whacky good read" })
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Input value not found");
+        });
+    });
+    test("400: responds with appropriate error message when input body is missing information", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({ body: "A whacky good read" })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("200: responds with newly created comment when additional unnecessary info is added to the request body", () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send({
+          username: "rogersop",
+          body: "A whacky good read",
+          hobby: "running",
+        })
+        .expect(201)
+        .then((response) => {
+          const { comment } = response.body;
+          expect(comment).toHaveProperty("votes", 0);
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("body", "A whacky good read");
+          expect(comment).toHaveProperty("article_id", 3);
+          expect(comment).toHaveProperty("author", "rogersop");
+        });
     });
   });
-  describe("/api/users", () => {
-    describe("GET", () => {
-      test("200: responds with an array of users with username, name, and avatar_url properties", () => {
-        return request(app)
-          .get("/api/users")
-          .expect(200)
-          .then((response) => {
-            const { users } = response.body;
-            expect(users.length).toBe(4);
-            users.forEach((user) => {
-              expect(user).toHaveProperty("username");
-              expect(user).toHaveProperty("name");
-              expect(user).toHaveProperty("avatar_url");
-            });
+});
+describe("/api/comments/:comment_id", () => {
+  describe("GET", () => {
+    test("200: responds with 200 when comment exists", () => {
+      return request(app).get("/api/comments/3").expect(200);
+    });
+    test("400: responds with appropriate error message when comment id is invalid", () => {
+      return request(app)
+        .get("/api/comments/tree")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("404: responds with appropriate error message when comment id does not exist", () => {
+      return request(app)
+        .get("/api/comments/1231212")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Comment id does not exist");
+        });
+    });
+  });
+  describe("DELETE", () => {
+    test("204: deletes comment by given comment id", () => {
+      return request(app)
+        .delete("/api/comments/3")
+        .expect(204)
+        .then(() => {
+          return request(app).get("/api/comments/3").expect(404);
+        })
+        .then((response) => {
+          expect(response.body.msg).toBe("Comment id does not exist");
+        });
+    });
+    test("400: responds with appropriate error message when comment id is invalid", () => {
+      return request(app)
+        .delete("/api/comments/tree")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("404: responds with appropriate error message when comment id does not exist", () => {
+      return request(app)
+        .delete("/api/comments/1231212")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Comment id does not exist");
+        });
+    });
+  });
+});
+describe("/api/users", () => {
+  describe("GET", () => {
+    test("200: responds with an array of users with username, name, and avatar_url properties", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((response) => {
+          const { users } = response.body;
+          expect(users.length).toBe(4);
+          users.forEach((user) => {
+            expect(user).toHaveProperty("username");
+            expect(user).toHaveProperty("name");
+            expect(user).toHaveProperty("avatar_url");
           });
-      });
+        });
     });
   });
 });
@@ -574,6 +573,33 @@ describe("checkTopicExists", () => {
         .expect(404)
         .then((response) => {
           expect(response.body.msg).toBe("Topic does not exist");
+        });
+    });
+  });
+});
+
+describe("/api/users/:username", () => {
+  describe("GET", () => {
+    test("200: returns a user with all the necessary details", () => {
+      return request(app)
+        .get("/api/users/icellusedkars")
+        .expect(200)
+        .then((response) => {
+          const { user } = response.body;
+          expect(user).toEqual({
+            username: "icellusedkars",
+            name: "sam",
+            avatar_url:
+              "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4",
+          });
+        });
+    });
+    test("404: returns appropriate error message when user does not exist", () => {
+      return request(app)
+        .get("/api/users/memememe")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe('User does not exist')
         });
     });
   });

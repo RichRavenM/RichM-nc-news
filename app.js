@@ -11,7 +11,10 @@ const {
   getCommentById,
   deleteCommentById,
 } = require("./controllers/comments.controllers");
-const { getUsers } = require("./controllers/users.controllers");
+const {
+  getUsers,
+  getUserByUsername,
+} = require("./controllers/users.controllers");
 const {
   handleSqlErrors,
   handleCustomErrors,
@@ -30,6 +33,7 @@ app.post("/api/articles/:article_id/comments", postCommentbyArticleId);
 app.get("/api/comments/:comment_id", getCommentById);
 app.delete("/api/comments/:comment_id", deleteCommentById);
 app.get("/api/users", getUsers);
+app.get("/api/users/:username", getUserByUsername);
 
 app.use((request, response) => {
   response.status(404).send({ msg: "Invalid url" });
@@ -39,6 +43,6 @@ app.use(handleCustomErrors);
 app.use((err, req, res, next) => {
   console.log(err);
   res.status(500).send({ msg: "Internal Server Error" });
-})
+});
 
-module.exports =  app;
+module.exports = app;
