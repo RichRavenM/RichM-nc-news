@@ -1,25 +1,5 @@
 const db = require("../db/connection");
 
-exports.selectArticleById = (article_id) => {
-  let baseSQLString = `SELECT articles.author, articles.title, articles.article_id, articles.body, articles.topic, articles.created_at, articles.votes, 
-  articles.article_img_url, count(comments)::int AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
-  if (article_id) {
-    baseSQLString += `WHERE articles.article_id = $1 `;
-  }
-
-  baseSQLString += `GROUP BY articles.article_id;`;
-
-  return db.query(baseSQLString, [article_id]).then(({ rows }) => {
-    if (!rows.length) {
-      return Promise.reject({
-        status: 404,
-        msg: "Article id does not exist",
-      });
-    }
-    return rows[0];
-  });
-};
-
 exports.selectArticles = (order = "desc", sort_by = "created_at", topic) => {
   const queryValues = [];
   const acceptableOrders = ["asc", "desc"];
@@ -54,6 +34,38 @@ exports.selectArticles = (order = "desc", sort_by = "created_at", topic) => {
 
   return db.query(baseSQLString, queryValues).then(({ rows }) => {
     return rows;
+  });
+};
+
+exports.insertArticle = (body) => {
+  return db
+    .query(
+      `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [body.author, body.title, body.body, body.topic, body.article_img_url]
+    )
+    .then(({ rows }) => {
+      rows[0].comment_count = 0;
+      return rows[0];
+    });
+};
+
+exports.selectArticleById = (article_id) => {
+  let baseSQLString = `SELECT articles.author, articles.title, articles.article_id, articles.body, articles.topic, articles.created_at, articles.votes, 
+  articles.article_img_url, count(comments)::int AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
+  if (article_id) {
+    baseSQLString += `WHERE articles.article_id = $1 `;
+  }
+
+  baseSQLString += `GROUP BY articles.article_id;`;
+
+  return db.query(baseSQLString, [article_id]).then(({ rows }) => {
+    if (!rows.length) {
+      return Promise.reject({
+        status: 404,
+        msg: "Article id does not exist",
+      });
+    }
+    return rows[0];
   });
 };
 

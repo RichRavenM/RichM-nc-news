@@ -372,6 +372,107 @@ describe("/api/articles", () => {
         });
     });
   });
+  describe("POST", () => {
+    test("201: posts a new article and responds with the newly posted article", () => {
+      const testArticle = {
+        author: "icellusedkars",
+        title: "A History of Jeffs",
+        body: "On the first day, there was only one Jeff. On the second...",
+        topic: "cats",
+        article_img_url:
+          "https://th-thumbnailer.cdn-si-edu.com/bZAar59Bdm95b057iESytYmmAjI=/1400x1050/filters:focal(594x274:595x275)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/95/db/95db799b-fddf-4fde-91f3-77024442b92d/egypt_kitty_social.jpg",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(201)
+        .then((response) => {
+          const { article } = response.body;
+          expect(article).toHaveProperty("author", "icellusedkars");
+          expect(article).toHaveProperty("title", "A History of Jeffs");
+          expect(article).toHaveProperty(
+            "body",
+            "On the first day, there was only one Jeff. On the second..."
+          );
+          expect(article).toHaveProperty("topic", "cats");
+          expect(article).toHaveProperty(
+            "article_img_url",
+            "https://th-thumbnailer.cdn-si-edu.com/bZAar59Bdm95b057iESytYmmAjI=/1400x1050/filters:focal(594x274:595x275)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/95/db/95db799b-fddf-4fde-91f3-77024442b92d/egypt_kitty_social.jpg"
+          );
+          expect(article).toHaveProperty("comment_count");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_id");
+        });
+    });
+    test("404: responds with appropriate error message when username that does not exist is used", () => {
+      const testArticle = {
+        author: "Jeff",
+        title: "A History of Jeffs",
+        body: "On the first day, there was only one Jeff. On the second...",
+        topic: "cats",
+        article_img_url:
+          "https://th-thumbnailer.cdn-si-edu.com/bZAar59Bdm95b057iESytYmmAjI=/1400x1050/filters:focal(594x274:595x275)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/95/db/95db799b-fddf-4fde-91f3-77024442b92d/egypt_kitty_social.jpg",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Input value not found");
+        });
+    });
+    test("404: responds with appropriate error message when topic that does not exist is used", () => {
+      const testArticle = {
+        author: "icellusedkars",
+        title: "A History of Jeffs",
+        body: "On the first day, there was only one Jeff. On the second...",
+        topic: "beans",
+        article_img_url:
+          "https://th-thumbnailer.cdn-si-edu.com/bZAar59Bdm95b057iESytYmmAjI=/1400x1050/filters:focal(594x274:595x275)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/95/db/95db799b-fddf-4fde-91f3-77024442b92d/egypt_kitty_social.jpg",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Input value not found");
+        });
+    });
+    test("201: responds with created article when extra unnecessary information is included in the request body", () => {
+      const testArticle = {
+        author: "icellusedkars",
+        title: "A History of Jeffs",
+        body: "On the first day, there was only one Jeff. On the second...",
+        topic: "cats",
+        article_img_url:
+          "https://th-thumbnailer.cdn-si-edu.com/bZAar59Bdm95b057iESytYmmAjI=/1400x1050/filters:focal(594x274:595x275)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/95/db/95db799b-fddf-4fde-91f3-77024442b92d/egypt_kitty_social.jpg",
+        age: 7,
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(201)
+        .then((response) => {
+          const { article } = response.body;
+          expect(article).toHaveProperty("author", "icellusedkars");
+          expect(article).toHaveProperty("title", "A History of Jeffs");
+          expect(article).toHaveProperty(
+            "body",
+            "On the first day, there was only one Jeff. On the second..."
+          );
+          expect(article).toHaveProperty("topic", "cats");
+          expect(article).toHaveProperty(
+            "article_img_url",
+            "https://th-thumbnailer.cdn-si-edu.com/bZAar59Bdm95b057iESytYmmAjI=/1400x1050/filters:focal(594x274:595x275)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/95/db/95db799b-fddf-4fde-91f3-77024442b92d/egypt_kitty_social.jpg"
+          );
+          expect(article).toHaveProperty("comment_count");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_id");
+        });
+    });
+  });
 });
 describe("/api/articles/:article_id/comments", () => {
   describe("GET", () => {
@@ -453,7 +554,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(response.body.msg).toBe("Input value not found");
         });
     });
-    test("400: responds with appropriate error message when username does not exist", () => {
+    test("404: responds with appropriate error message when username does not exist", () => {
       return request(app)
         .post("/api/articles/3/comments")
         .send({ username: "Billy", body: "A whacky good read" })

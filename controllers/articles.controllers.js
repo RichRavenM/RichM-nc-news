@@ -4,20 +4,10 @@ const {
   selectCommentsByArticleId,
   updateArticleVotesById,
   insertCommentByArticleId,
+  insertArticle,
 } = require("../models/articles.models");
 
 const { checkTopicExists } = require("../models/topics.models");
-
-exports.getArticleById = (request, response, next) => {
-  const { article_id } = request.params;
-  selectArticleById(article_id)
-    .then((article) => {
-      response.status(200).send({ article });
-    })
-    .catch((error) => {
-      next(error);
-    });
-};
 
 exports.getArticles = (request, response, next) => {
   const { order, sort_by, topic } = request.query;
@@ -34,6 +24,29 @@ exports.getArticles = (request, response, next) => {
       next(error);
     });
 };
+
+exports.postArticles = (request, response, next) => {
+  const { body } = request;
+  insertArticle(body)
+    .then((article) => {
+      response.status(201).send({ article });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+exports.getArticleById = (request, response, next) => {
+  const { article_id } = request.params;
+  selectArticleById(article_id)
+    .then((article) => {
+      response.status(200).send({ article });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
 exports.getCommentsByArticleId = (request, response, next) => {
   const { article_id } = request.params;
   const promises = [
