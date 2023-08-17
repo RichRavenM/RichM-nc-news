@@ -1,16 +1,35 @@
-# Northcoders News API
+```
+
+██████  ██  ██████ ██   ██ ███████                                                                                                                          
+██   ██ ██ ██      ██   ██ ██                                                                                                                               
+██████  ██ ██      ███████ ███████                                                                                                                          
+██   ██ ██ ██      ██   ██      ██                                                                                                                          
+██   ██ ██  ██████ ██   ██ ███████                                                                                                                          
+                                                                                                                                                            
+                                                                                                                                                            
+███    ██  ██████  ██████  ████████ ██   ██  ██████  ██████  ██████  ███████ ██████  ███████     ███    ██ ███████ ██     ██ ███████      █████  ██████  ██ 
+████   ██ ██    ██ ██   ██    ██    ██   ██ ██      ██    ██ ██   ██ ██      ██   ██ ██          ████   ██ ██      ██     ██ ██          ██   ██ ██   ██ ██ 
+██ ██  ██ ██    ██ ██████     ██    ███████ ██      ██    ██ ██   ██ █████   ██████  ███████     ██ ██  ██ █████   ██  █  ██ ███████     ███████ ██████  ██ 
+██  ██ ██ ██    ██ ██   ██    ██    ██   ██ ██      ██    ██ ██   ██ ██      ██   ██      ██     ██  ██ ██ ██      ██ ███ ██      ██     ██   ██ ██      ██ 
+██   ████  ██████  ██   ██    ██    ██   ██  ██████  ██████  ██████  ███████ ██   ██ ███████     ██   ████ ███████  ███ ███  ███████     ██   ██ ██      ██ 
+                                                                                                                                                            
+                                                                                                                                                            
+
+```
+
+#
 
 Welcome to Rich's Northcoders News API! The best API for all your Northcoders News Needs! Here you can access my API server to get all the information you'll ever need about the latest Northcoders News articles, who's reacted to them, and most importantly, who those people were!
 
-Here's the website the server is hosted on for your pleasure
+Here's the website the server's hosted on for your pleasure
 
 `https://nc-news-api-rich.onrender.com/`
 
 ## Getting Started
 
-Before commencing, please ensure you're running a version of Node.js that is **at least v18.11.3**
+Before commencing, please ensure you're running a version of Node.js that's **at least v18.11.3**
 
-To have access to the code. You will need to clone this git repository into your local device. To do this, please enter
+To have access to the code. You'll need to clone this git repository into your local device. To do this, please enter
 
 `git clone https://github.com/RichRavenM/RichM-nc-news`
 
@@ -18,7 +37,7 @@ into your terminal.
 
 <br>
 
-In order to connect to your databases, please add two .env files. First, a .env.development for creating your main database, and then .env.test for creating your test database.
+In order to connect to your databases, please add two .env files. First, a .env.development for creating your main database, and then a .env.test for creating your test database.
 
 In each of these files, include the following code:
 
@@ -26,7 +45,7 @@ In each of these files, include the following code:
 PGDATABASE=your_database_name_here
 ```
 
-You will be able to see and/or rename these files in the setup.sql file.
+You'll be able to see and/or rename these files in the setup.sql file.
 
 Before creating your database, first ensure you have npm initialised on your local device. You can do this by running:
 
@@ -72,7 +91,9 @@ into the terminal.
 
 Finally, before you can interact with the API on your own device, install express as a final dependency.
 To do this, type  
-`npm i express`
+```
+npm i express
+```
 
 into your terminal.
 
@@ -131,7 +152,7 @@ npm i -D supertest
 into your terminal.
 
 <br>
-After this, ensure your package.json file is updated to all jest to run. First ensure you have jest set to your npm test.
+After this, ensure your package.json file's updated to all jest to run. First ensure you have jest set to your npm test.
 
 ```
 "scripts": {
@@ -154,7 +175,7 @@ Each time you run a test, a new test database will be seeded, ensuring you don't
 
 <br>
 
-Finally, before committing, husky will run all the tests again to ensure everything is up to scratch. If any fail, you won't be able to commit your files.
+Finally, before committing, husky will run all the tests again to ensure everything's up to scratch. If any fail, you won't be able to commit your files.
 
 husky _should_ be pre-installed and setup when you clone this repo. However, if it isn't, follow these instructions (documentation sourced from https://www.npmjs.com/package/husky):
 
