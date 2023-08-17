@@ -104,7 +104,11 @@
   },
   "GET /api/articles/:articles_id/comments": {
     "description": "returns an array contatining comments relevant to the article_id",
-    "queries": [],
+    "queries": ["limit", "p"],
+    "queryInfo": {
+      "limit": "paginates the results, limiting them to the number specified in this query",
+      "p": "returns the page of results corresponding to the number specified in the query"
+    },
     "exampleResponse": {
       "comment_id": 11,
       "votes": 0,
