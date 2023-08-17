@@ -579,7 +579,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(comments.length).toBe(2);
           comments.forEach((comment) => {
             expect(comment).toHaveProperty("comment_id");
-            expect(comment).toHaveProperty("article_id");
+            expect(comment).toHaveProperty("article_id", 3);
             expect(comment).toHaveProperty("votes");
             expect(comment).toHaveProperty("created_at");
             expect(comment).toHaveProperty("author");
@@ -610,6 +610,85 @@ describe("/api/articles/:article_id/comments", () => {
         .then((response) => {
           const { comments } = response.body;
           expect(comments).toEqual([]);
+        });
+    });
+    test("200: responds with a limited number of comments when a limit query is applied", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5")
+        .expect(200)
+        .then((response) => {
+          const { comments } = response.body;
+          expect(comments).toBeSortedBy("created_at", { descending: true });
+          expect(comments.length).toBe(5);
+          comments.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id");
+            expect(comment).toHaveProperty("article_id", 1);
+            expect(comment).toHaveProperty("votes");
+            expect(comment).toHaveProperty("created_at");
+            expect(comment).toHaveProperty("author");
+            expect(comment).toHaveProperty("body");
+          });
+        });
+    });
+    test("200: responds with all the comments when the limit is greater than the total number of comments", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=45")
+        .expect(200)
+        .then((response) => {
+          const { comments } = response.body;
+          expect(comments).toBeSortedBy("created_at", { descending: true });
+          expect(comments.length).toBe(11);
+          comments.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id");
+            expect(comment).toHaveProperty("article_id", 1);
+            expect(comment).toHaveProperty("votes");
+            expect(comment).toHaveProperty("created_at");
+            expect(comment).toHaveProperty("author");
+            expect(comment).toHaveProperty("body");
+          });
+        });
+    });
+    test("400: responds with appropriate error message when invalid query input is used", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=tree")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("200: responds with correct page of rows when page query input is given", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=2")
+        .expect(200)
+        .then((response) => {
+          const { comments } = response.body;
+          expect(comments).toBeSortedBy("created_at", { descending: true });
+          expect(comments.length).toBe(1);
+          comments.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id");
+            expect(comment).toHaveProperty("article_id", 1);
+            expect(comment).toHaveProperty("votes");
+            expect(comment).toHaveProperty("created_at");
+            expect(comment).toHaveProperty("author");
+            expect(comment).toHaveProperty("body");
+          });
+        });
+    });
+    test("200:responds with an empty array if the page number is greater than pages available", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=4")
+        .expect(200)
+        .then((response) => {
+          const { comments } = response.body;
+          expect(comments.length).toBe(0);
+        });
+    });
+    test("400: responds with the appropraite error message when an invalid page number is used in the query", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=tree")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
         });
     });
   });

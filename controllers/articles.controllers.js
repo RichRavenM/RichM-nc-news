@@ -73,8 +73,9 @@ exports.deleteArticlebyId = (request, response, next) => {
 
 exports.getCommentsByArticleId = (request, response, next) => {
   const { article_id } = request.params;
+  const { limit, p } = request.query;
   const promises = [
-    selectCommentsByArticleId(article_id),
+    selectCommentsByArticleId(article_id, limit, p),
     selectArticleById(article_id),
   ];
   Promise.all(promises)

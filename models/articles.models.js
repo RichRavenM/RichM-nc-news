@@ -96,16 +96,23 @@ exports.removeArticleById = (article_id) => {
   });
 };
 
-exports.selectCommentsByArticleId = (article_id) => {
+exports.selectCommentsByArticleId = (article_id, limit = 10, p = 1) => {
   let baseSQLString = `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body,comments.article_id FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id `;
-
+  const queryValues = [];
+  const offset = limit * (p - 1);
   if (article_id) {
     baseSQLString += `WHERE comments.article_id = $1`;
+    queryValues.push(article_id);
   }
 
   baseSQLString += `ORDER BY comments.created_at DESC`;
 
-  return db.query(baseSQLString, [article_id]).then(({ rows }) => {
+  if (limit) {
+    baseSQLString += ` LIMIT $2 OFFSET $3`;
+    queryValues.push(limit, offset);
+  }
+
+  return db.query(baseSQLString, queryValues).then(({ rows }) => {
     return rows;
   });
 };
