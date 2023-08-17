@@ -257,7 +257,7 @@ describe("/api/articles/:article_id", () => {
 });
 
 describe("/api/articles", () => {
-  describe.only("GET", () => {
+  describe("GET", () => {
     test("200: responds with array of articles with comment counts in descending date order", () => {
       return request(app)
         .get("/api/articles")
