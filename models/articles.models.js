@@ -1,6 +1,14 @@
 const db = require("../db/connection");
 
-exports.selectArticles = (order = "desc", sort_by = "created_at", topic) => {
+exports.selectArticles = (
+  order = "desc",
+  sort_by = "created_at",
+  topic,
+  limit = 15,
+  p = 1,
+  total_count = '0'
+) => {
+  const offset = limit * (p - 1);
   const queryValues = [];
   const acceptableOrders = ["asc", "desc"];
   const acceptableSortBys = [
@@ -13,6 +21,7 @@ exports.selectArticles = (order = "desc", sort_by = "created_at", topic) => {
     "votes",
     "created_at",
   ];
+  const acceptableTotalCounts = ['0', '1'];
 
   if (!acceptableOrders.includes(order)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
@@ -21,16 +30,28 @@ exports.selectArticles = (order = "desc", sort_by = "created_at", topic) => {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
-  let baseSQLString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at,articles.votes, articles.article_img_url, count(comments)::int AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
+  let baseSQLString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at,articles.votes, articles.article_img_url, count(comments)::int AS comment_count `;
+
+  if (!acceptableTotalCounts.includes(total_count)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+  if (total_count === "1") {
+    baseSQLString += `, count(*) OVER() AS total_count `;
+  }
+
+  baseSQLString += `FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
 
   if (topic) {
-    baseSQLString += `WHERE articles.topic = $1 `;
+    baseSQLString += `WHERE articles.topic = $3 `;
     queryValues.push(topic);
   }
 
   baseSQLString += `GROUP BY articles.article_id `;
 
-  baseSQLString += `ORDER BY ${sort_by} ${order};`;
+  baseSQLString += `ORDER BY ${sort_by} ${order} `;
+
+  baseSQLString += `LIMIT $1 OFFSET $2`;
+  queryValues.unshift(limit, offset);
 
   return db.query(baseSQLString, queryValues).then(({ rows }) => {
     return rows;

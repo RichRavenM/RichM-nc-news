@@ -20,11 +20,22 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles. use ",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": [
+      "author",
+      "topic",
+      "sort_by",
+      "order",
+      "limit",
+      "p",
+      "total_count"
+    ],
     "queryInfo": {
       "topic": "filters results to only include articles which match topic",
       "sort_by": "sorts articles by values for valid article parameters. sorts numeric values numerically and non-numerical values alphabetically. defaults to created_at",
-      "order": "sorts articles in ascending or descending order. defaults to descending"
+      "order": "sorts articles in ascending or descending order. defaults to descending",
+      "limit": "paginates the results, limiting them to the number specified in this query",
+      "p": "returns the page of results corresponding to the number specified in the query",
+      "total_count": "specifies whether you will see the total count of all articles that meet the query criteria in the response to help you figure out how many pages you might need to view for a given limit. inputs are '1' if you want to see the total count and '0' if you don't. defaults to '0'."
     },
     "exampleResponse": {
       "articles": [

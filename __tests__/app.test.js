@@ -3,6 +3,7 @@ const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
+const articles = require("../db/data/test-data/articles");
 const endpoints = require(`${__dirname}/../endpoints.json`);
 
 beforeEach(() => {
@@ -256,7 +257,7 @@ describe("/api/articles/:article_id", () => {
 });
 
 describe("/api/articles", () => {
-  describe("GET", () => {
+  describe.only("GET", () => {
     test("200: responds with array of articles with comment counts in descending date order", () => {
       return request(app)
         .get("/api/articles")
@@ -453,6 +454,120 @@ describe("/api/articles", () => {
         .expect(404)
         .then((response) => {
           expect(response.body.msg).toBe("Topic does not exist");
+        });
+    });
+    test("200: responds with a limited number of articles when a limit query is applied", () => {
+      return request(app)
+        .get("/api/articles?limit=5")
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+          expect(articles.length).toBe(5);
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("topic");
+            expect(article).toHaveProperty("author");
+            expect(article).toHaveProperty("title");
+            expect(article).toHaveProperty("article_id");
+            expect(article).toHaveProperty("created_at");
+            expect(article).toHaveProperty("votes");
+            expect(article).toHaveProperty("article_img_url");
+            expect(article).toHaveProperty("comment_count");
+          });
+        });
+    });
+    test("200: responds with all the articles when the limit is greater than the total number of articles", () => {
+      return request(app)
+        .get("/api/articles?limit=45")
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+          expect(articles.length).toBe(13);
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("topic");
+            expect(article).toHaveProperty("author");
+            expect(article).toHaveProperty("title");
+            expect(article).toHaveProperty("article_id");
+            expect(article).toHaveProperty("created_at");
+            expect(article).toHaveProperty("votes");
+            expect(article).toHaveProperty("article_img_url");
+            expect(article).toHaveProperty("comment_count");
+          });
+        });
+    });
+    test("400: responds with appropriate error message when invalid query input is used", () => {
+      return request(app)
+        .get("/api/articles?limit=tree")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("200: responds with correct page of rows when page query input is given", () => {
+      return request(app)
+        .get("/api/articles?p=3&limit=5")
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+          expect(articles.length).toBe(3);
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("topic");
+            expect(article).toHaveProperty("author");
+            expect(article).toHaveProperty("title");
+            expect(article).toHaveProperty("article_id");
+            expect(article).toHaveProperty("created_at");
+            expect(article).toHaveProperty("votes");
+            expect(article).toHaveProperty("article_img_url");
+            expect(article).toHaveProperty("comment_count");
+          });
+        });
+    });
+    test("200:responds with an empty array if the page number is greater than pages available", () => {
+      return request(app)
+        .get("/api/articles?p=4")
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles.length).toBe(0);
+        });
+    });
+    test("400: responds with the appropraite error message when an invalid page number is used in the query", () => {
+      return request(app)
+        .get("/api/articles?p=tree")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("200: response body includes a total count of all rows when total_count is included", () => {
+      return request(app)
+        .get("/api/articles?total_count=1&limit=5")
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+          expect(articles.length).toBe(5);
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("topic");
+            expect(article).toHaveProperty("author");
+            expect(article).toHaveProperty("title");
+            expect(article).toHaveProperty("article_id");
+            expect(article).toHaveProperty("created_at");
+            expect(article).toHaveProperty("votes");
+            expect(article).toHaveProperty("article_img_url");
+            expect(article).toHaveProperty("comment_count");
+            expect(article).toHaveProperty("total_count", '13');
+          });
+        });
+    });
+    test("400: responds with appropriate error message when invalid query input is used", () => {
+      return request(app)
+        .get("/api/articles?total_count=2")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
         });
     });
   });
