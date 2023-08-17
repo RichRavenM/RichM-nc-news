@@ -1,22 +1,20 @@
 const db = require("../db/connection");
 
-exports.selectUsers = () => {
-  return db.query(`SELECT * FROM users`).then(({ rows }) => {
-    return rows;
-  });
+exports.selectUsers = async () => {
+  const { rows } = await db.query(`SELECT * FROM users`);
+  return rows;
 };
 
-exports.SelectUserByUsername = (username) => {
+exports.SelectUserByUsername = async (username) => {
   let baseSQLString = `SELECT * FROM users `;
   const queryvalue = [];
   if (username) {
     baseSQLString += `WHERE username = $1`;
     queryvalue.push(username);
   }
-  return db.query(baseSQLString, queryvalue).then(({ rows }) => {
-    if (!rows.length) {
-      return Promise.reject({ status: 404, msg: "User does not exist" });
-    }
-    return rows[0];
-  });
+  const { rows } = await db.query(baseSQLString, queryvalue);
+  if (!rows.length) {
+    return Promise.reject({ status: 404, msg: "User does not exist" });
+  }
+  return rows[0];
 };

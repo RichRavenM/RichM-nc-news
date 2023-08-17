@@ -1,19 +1,21 @@
 const { response } = require("../app");
 const { selectTopics, insertTopic } = require("../models/topics.models");
 
-exports.getTopics = (request, response, next) => {
-  selectTopics().then((topics) => {
+exports.getTopics = async (request, response, next) => {
+  try {
+    const topics = await selectTopics();
     response.status(200).send({ topics });
-  });
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.postTopic = (request, response, next) => {
+exports.postTopic = async (request, response, next) => {
   const { body } = request;
-  insertTopic(body)
-    .then((topic) => {
-      response.status(201).send({ topic });
-    })
-    .catch((error) => {
-      next(error);
-    });
+  try {
+    const topic = await insertTopic(body);
+    response.status(201).send({ topic });
+  } catch (error) {
+    next(error);
+  }
 };
