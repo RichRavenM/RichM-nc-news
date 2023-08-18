@@ -138,7 +138,7 @@ describe("/api/articles/:article_id", () => {
             comment_count: 2,
           });
         });
-     });
+    });
     test("400: Responds with appropriate error when invalid id is used", () => {
       return request(app)
         .get("/api/articles/tree")
@@ -547,9 +547,9 @@ describe("/api/articles", () => {
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
-          const {total_count} = response.body
+          const { total_count } = response.body;
           expect(articles).toBeSortedBy("created_at", { descending: true });
-          expect(total_count).toBe(13)
+          expect(total_count).toBe(13);
           expect(articles.length).toBe(5);
           articles.forEach((article) => {
             expect(article).toHaveProperty("topic");

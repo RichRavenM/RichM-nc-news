@@ -55,7 +55,7 @@ exports.selectArticles = async (
 
   const { rows } = await db.query(baseSQLString, queryValues);
   const returnArray = [rows]
-  if (rows.length) {
+  if (total_count === '1') {
 
     const totalCount = +rows[0].total_count;
     rows.forEach((row) => {
