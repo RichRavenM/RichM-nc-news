@@ -20,8 +20,9 @@ exports.getArticles = async (request, response, next) => {
   }
   try {
     const resolvedPromises = await Promise.all(promises);
-    const articles = resolvedPromises[0];
-    response.status(200).send({ articles });
+    const articles = resolvedPromises[0][0];
+    const total_count = resolvedPromises[0][1];
+    response.status(200).send({ articles, total_count });
   } catch (error) {
     next(error);
   }

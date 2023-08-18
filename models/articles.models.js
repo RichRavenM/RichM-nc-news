@@ -6,7 +6,7 @@ exports.selectArticles = async (
   topic,
   limit = 15,
   p = 1,
-  total_count = '0'
+  total_count = "0"
 ) => {
   const offset = limit * (p - 1);
   const queryValues = [];
@@ -21,7 +21,7 @@ exports.selectArticles = async (
     "votes",
     "created_at",
   ];
-  const acceptableTotalCounts = ['0', '1'];
+  const acceptableTotalCounts = ["0", "1"];
 
   if (!acceptableOrders.includes(order)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
@@ -54,15 +54,23 @@ exports.selectArticles = async (
   queryValues.unshift(limit, offset);
 
   const { rows } = await db.query(baseSQLString, queryValues);
-  return rows;
+  const returnArray = [rows]
+  if (rows.length) {
+
+    const totalCount = +rows[0].total_count;
+    rows.forEach((row) => {
+      delete row.total_count;
+    });
+    returnArray.push(totalCount)
+  }
+  return returnArray;
 };
 
 exports.insertArticle = async (body) => {
-  const { rows } = await db
-    .query(
-      `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [body.author, body.title, body.body, body.topic, body.article_img_url]
-    );
+  const { rows } = await db.query(
+    `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+    [body.author, body.title, body.body, body.topic, body.article_img_url]
+  );
   rows[0].comment_count = 0;
   return rows[0];
 };
@@ -76,7 +84,8 @@ exports.selectArticleById = async (article_id) => {
 
   baseSQLString += `GROUP BY articles.article_id;`;
 
-  const { rows } = await db.query(baseSQLString, [article_id]);
+  const response = await db.query(baseSQLString, [article_id]);
+  const { rows } = response;
   if (!rows.length) {
     return Promise.reject({
       status: 404,
@@ -88,8 +97,7 @@ exports.selectArticleById = async (article_id) => {
 
 exports.updateArticleVotesById = async (body, article_id) => {
   let baseSQLString = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`;
-  const { rows } = await db
-    .query(baseSQLString, [body.inc_votes, article_id]);
+  const { rows } = await db.query(baseSQLString, [body.inc_votes, article_id]);
   if (!rows.length) {
     return Promise.reject({
       status: 404,
@@ -131,10 +139,9 @@ exports.selectCommentsByArticleId = async (article_id, limit = 15, p = 1) => {
 };
 
 exports.insertCommentByArticleId = async (body, article_id) => {
-  const { rows } = await db
-    .query(
-      `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *`,
-      [body.username, body.body, article_id]
-    );
+  const { rows } = await db.query(
+    `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *`,
+    [body.username, body.body, article_id]
+  );
   return rows[0];
 };

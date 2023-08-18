@@ -524,7 +524,7 @@ describe("/api/articles", () => {
           });
         });
     });
-    test("200:responds with an empty array if the page number is greater than pages available", () => {
+    test("200: responds with an empty array if the page number is greater than pages available", () => {
       return request(app)
         .get("/api/articles?p=4")
         .expect(200)
@@ -547,7 +547,9 @@ describe("/api/articles", () => {
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
+          const {total_count} = response.body
           expect(articles).toBeSortedBy("created_at", { descending: true });
+          expect(total_count).toBe(13)
           expect(articles.length).toBe(5);
           articles.forEach((article) => {
             expect(article).toHaveProperty("topic");
@@ -558,7 +560,6 @@ describe("/api/articles", () => {
             expect(article).toHaveProperty("votes");
             expect(article).toHaveProperty("article_img_url");
             expect(article).toHaveProperty("comment_count");
-            expect(article).toHaveProperty("total_count", '13');
           });
         });
     });
@@ -789,7 +790,7 @@ describe("/api/articles/:article_id/comments", () => {
           });
         });
     });
-    test("200:responds with an empty array if the page number is greater than pages available", () => {
+    test("200: responds with an empty array if the page number is greater than pages available", () => {
       return request(app)
         .get("/api/articles/1/comments?p=4")
         .expect(200)
