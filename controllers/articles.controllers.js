@@ -21,11 +21,12 @@ exports.getArticles = async (request, response, next) => {
   try {
     const resolvedPromises = await Promise.all(promises);
     const articles = resolvedPromises[0][0];
-    const responseBody = {articles}
+    const responseBody = {};
     if (total_count) {
       const total_count = resolvedPromises[0][1];
-      responseBody.total_count = total_count
+      responseBody.total_count = total_count;
     }
+    responseBody.articles = articles;
     response.status(200).send(responseBody);
   } catch (error) {
     next(error);
