@@ -138,7 +138,7 @@ describe("/api/articles/:article_id", () => {
             comment_count: 2,
           });
         });
-    });
+     });
     test("400: Responds with appropriate error when invalid id is used", () => {
       return request(app)
         .get("/api/articles/tree")
@@ -773,7 +773,7 @@ describe("/api/articles/:article_id/comments", () => {
     });
     test("200: responds with correct page of rows when page query input is given", () => {
       return request(app)
-        .get("/api/articles/1/comments?p=2")
+        .get("/api/articles/1/comments?limit=10&p=2")
         .expect(200)
         .then((response) => {
           const { comments } = response.body;
