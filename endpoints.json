@@ -15,7 +15,9 @@
   "POST /api/topics": {
     "description": "adds a new topic to the topics table and returns the newly created topic. must contain a slug that does not already exist",
     "body": { "slug": "Baseball", "description": "Home run!" },
-    "exampleResponse": { "slug": "Baseball", "description": "Home run!" },
+    "exampleResponse": {
+      "topic": { "slug": "Baseball", "description": "Home run!" }
+    },
     "status": 200
   },
   "GET /api/articles": {
@@ -62,15 +64,17 @@
       "article_img_url": "https://th-thumbnailer.cdn-si-edu.com/bZAar59Bdm95b057iESytYmmAjI=/1400x1050/filters:focal(594x274:595x275)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/95/db/95db799b-fddf-4fde-91f3-77024442b92d/egypt_kitty_social.jpg"
     },
     "exampleResponse": {
-      "article_id": 14,
-      "title": "A History of Jeffs",
-      "topic": "cats",
-      "author": "icellusedkars",
-      "body": "On the first day, there was only one Jeff. On the second...",
-      "created_at": "2023-08-16T13:58:19.246Z",
-      "votes": 0,
-      "article_img_url": "https://th-thumbnailer.cdn-si-edu.com/bZAar59Bdm95b057iESytYmmAjI=/1400x1050/filters:focal(594x274:595x275)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/95/db/95db799b-fddf-4fde-91f3-77024442b92d/egypt_kitty_social.jpg",
-      "comment_count": 0
+      "articles": {
+        "article_id": 14,
+        "title": "A History of Jeffs",
+        "topic": "cats",
+        "author": "icellusedkars",
+        "body": "On the first day, there was only one Jeff. On the second...",
+        "created_at": "2023-08-16T13:58:19.246Z",
+        "votes": 0,
+        "article_img_url": "https://th-thumbnailer.cdn-si-edu.com/bZAar59Bdm95b057iESytYmmAjI=/1400x1050/filters:focal(594x274:595x275)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/95/db/95db799b-fddf-4fde-91f3-77024442b92d/egypt_kitty_social.jpg",
+        "comment_count": 0
+      }
     },
     "status": 204
   },
@@ -121,12 +125,22 @@
       "p": "returns the page of results corresponding to the number specified in the query"
     },
     "exampleResponse": {
-      "comment_id": 11,
-      "votes": 0,
-      "created_at": "2020-09-19T23:10:00.000Z",
-      "author": "icellusedkars",
-      "body": "Ambidextrous marsupial",
-      "article_id": 3
+      "comments": [
+        {
+          "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          "votes": 14,
+          "author": "butter_bridge",
+          "article_id": 1,
+          "created_at": 1604113380000
+        },
+        {
+          "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+          "votes": 100,
+          "author": "icellusedkars",
+          "article_id": 1,
+          "created_at": 1583025180000
+        }
+      ]
     },
     "status": 200
   },
@@ -134,12 +148,14 @@
     "description": "adds a new comment to the comment table in the database. username must match a username from within the users table",
     "body": { "username": "rogersop", "body": "A whacky good read" },
     "exampleResponse": {
-      "comment_id": 19,
-      "body": "A whacky good read",
-      "article_id": 3,
-      "author": "rogersop",
-      "votes": 0,
-      "created_at": "2023-08-14T15:53:16.851Z"
+      "comment": {
+        "comment_id": 19,
+        "body": "A whacky good read",
+        "article_id": 3,
+        "author": "rogersop",
+        "votes": 0,
+        "created_at": "2023-08-14T15:53:16.851Z"
+      }
     },
     "status": 204
   },
@@ -166,18 +182,39 @@
     "description": "returns an array contatining objects of users",
     "queries": [],
     "exampleResponse": {
-      "username": "lurker",
-      "name": "do_nothing",
-      "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+      "users": [
+        {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        },
+        {
+          "username": "icellusedkars",
+          "name": "sam",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        },
+        {
+          "username": "rogersop",
+          "name": "paul",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        },
+        {
+          "username": "lurker",
+          "name": "do_nothing",
+          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+        }
+      ]
     }
   },
   "GET /api/users/:username": {
     "description": "returns an individual user matching the provided username",
     "queries": [],
     "exampleResponse": {
-      "username": "samsamsamsam",
-      "name": "sam",
-      "avatar_url": "https://th-thumbnailer.cdn-si-edu.com/bZAar59Bdm95b057iESytYmmAjI=/1400x1050/filters:focal(594x274:595x275)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/95/db/95db799b-fddf-4fde-91f3-77024442b92d/egypt_kitty_social.jpg"
+      "user": {
+        "username": "samsamsamsam",
+        "name": "sam",
+        "avatar_url": "https://th-thumbnailer.cdn-si-edu.com/bZAar59Bdm95b057iESytYmmAjI=/1400x1050/filters:focal(594x274:595x275)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/95/db/95db799b-fddf-4fde-91f3-77024442b92d/egypt_kitty_social.jpg"
+      }
     },
     "status": 200
   }
