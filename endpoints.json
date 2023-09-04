@@ -21,7 +21,7 @@
     "status": 200
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles. use ",
+    "description": "serves an array of all articles",
     "queries": [
       "author",
       "topic",
