@@ -4,7 +4,7 @@ exports.selectArticles = async (
   order = "desc",
   sort_by = "created_at",
   topic,
-  limit = 15,
+  limit = 18,
   p = 1,
   total_count = "0"
 ) => {
@@ -54,14 +54,13 @@ exports.selectArticles = async (
   queryValues.unshift(limit, offset);
 
   const { rows } = await db.query(baseSQLString, queryValues);
-  const returnArray = [rows]
-  if (total_count === '1') {
-
+  const returnArray = [rows];
+  if (total_count === "1") {
     const totalCount = +rows[0].total_count;
     rows.forEach((row) => {
       delete row.total_count;
     });
-    returnArray.push(totalCount)
+    returnArray.push(totalCount);
   }
   return returnArray;
 };
@@ -118,7 +117,7 @@ exports.removeArticleById = async (article_id) => {
   }
 };
 
-exports.selectCommentsByArticleId = async (article_id, limit = 15, p = 1) => {
+exports.selectCommentsByArticleId = async (article_id, limit = 12, p = 1) => {
   let baseSQLString = `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body,comments.article_id FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id `;
   const queryValues = [];
   const offset = limit * (p - 1);
