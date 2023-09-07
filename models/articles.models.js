@@ -4,11 +4,20 @@ exports.selectArticles = async (
   order = "desc",
   sort_by = "created_at",
   topic,
-  limit = 18,
-  p = 1,
+  limit,
+  p,
   total_count = "0"
 ) => {
-  const offset = limit * (p - 1);
+  let offset;
+  if (p && !limit) {
+    limit = 15;
+  }
+  if (limit) {
+    if (!p) {
+      p = 1;
+    }
+    offset = limit * (p - 1);
+  }
   const queryValues = [];
   const acceptableOrders = ["asc", "desc"];
   const acceptableSortBys = [
@@ -42,7 +51,11 @@ exports.selectArticles = async (
   baseSQLString += `FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
 
   if (topic) {
-    baseSQLString += `WHERE articles.topic = $3 `;
+    if (limit) {
+      baseSQLString += `WHERE articles.topic = $3 `;
+    } else {
+      baseSQLString += `WHERE articles.topic = $1 `;
+    }
     queryValues.push(topic);
   }
 
@@ -50,8 +63,10 @@ exports.selectArticles = async (
 
   baseSQLString += `ORDER BY ${sort_by} ${order} `;
 
-  baseSQLString += `LIMIT $1 OFFSET $2`;
-  queryValues.unshift(limit, offset);
+  if (limit) {
+    baseSQLString += `LIMIT $1 OFFSET $2`;
+    queryValues.unshift(limit, offset);
+  }
 
   const { rows } = await db.query(baseSQLString, queryValues);
   const returnArray = [rows];
@@ -117,10 +132,10 @@ exports.removeArticleById = async (article_id) => {
   }
 };
 
-exports.selectCommentsByArticleId = async (article_id, limit = 12, p = 1) => {
+exports.selectCommentsByArticleId = async (article_id, limit, p) => {
   let baseSQLString = `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body,comments.article_id FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id `;
   const queryValues = [];
-  const offset = limit * (p - 1);
+
   if (article_id) {
     baseSQLString += `WHERE comments.article_id = $1`;
     queryValues.push(article_id);
@@ -128,7 +143,15 @@ exports.selectCommentsByArticleId = async (article_id, limit = 12, p = 1) => {
 
   baseSQLString += `ORDER BY comments.created_at DESC`;
 
+  let offset;
+  if (p && !limit) {
+    limit = 12;
+  }
   if (limit) {
+    if (!p) {
+      p = 1;
+    }
+    offset = limit * (p - 1);
     baseSQLString += ` LIMIT $2 OFFSET $3`;
     queryValues.push(limit, offset);
   }
