@@ -43,6 +43,17 @@ exports.postArticles = async (request, response, next) => {
   }
 };
 
+// exports.postArticles = (request, response, next) => {
+//   const { body } = request;
+//   insertArticle(body)
+//     .then((article) => {
+//       response.status(201).send({ article });
+//     })
+//     .catch((error) => {
+//       next(error);
+//     });
+// };
+
 exports.getArticleById = async (request, response, next) => {
   const { article_id } = request.params;
   try {

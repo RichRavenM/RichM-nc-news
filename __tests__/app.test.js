@@ -4,7 +4,7 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
 const articles = require("../db/data/test-data/articles");
-const endpoints = require(`${__dirname}/../endpoints.json`);
+const apiEndpoints = require(`${__dirname}/../endpoints.json`);
 
 beforeEach(() => {
   return seed(data);
@@ -112,7 +112,7 @@ describe("/api", () => {
       .expect(200)
       .then((response) => {
         const { endpoints } = response.body;
-        expect(endpoints).toEqual(endpoints);
+        expect(endpoints).toEqual(apiEndpoints);
       });
   });
 });
